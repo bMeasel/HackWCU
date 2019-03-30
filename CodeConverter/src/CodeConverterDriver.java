@@ -12,13 +12,16 @@ public class CodeConverterDriver {
 	
 	public static String ConvertSelector(int indexFrom, int indexTo, String code) 
 	{
-		if(indexFrom == indexTo) {
+		if(indexFrom == indexTo)
+		{
 			return code;
 		}
-		else if(indexFrom == 0){
+		else if(indexFrom == 0)
+		{
 			return JavaToCPP(code);
 		}
-		else{
+		else
+		{
 			return CPPToJava(code);
 		}
 	}
@@ -28,11 +31,14 @@ public class CodeConverterDriver {
 	{
 		String[] res = orig.split(";");
 		String after;
+		String total = "";
 		for(int i = 0; i < res.length; i++)
 		{
 			after = res[i];
 			res[i] = JavaCPPLineBreakdown(after) + ";";
+			total = total.concat(res[i]);
 		}
+		return total;
 	}
 	
 	
@@ -51,6 +57,7 @@ public class CodeConverterDriver {
 		int num = orig.indexOf('>');
 		char ch = ' ';
 		char b = ' ';
+		String total = "";
 		
 		for(int i = 0; i < res.length; i++) 
 		{
@@ -62,14 +69,17 @@ public class CodeConverterDriver {
 			if((num >= 0) && (ch == b) && (i == 0))
 			{
 				after = res[i];
-				res[i] = "import java.util.Scanner; " + CPPJavaLineBreakdown(after) + ";";
+				res[i] = "import java.util.Scanner;" + CPPJavaLineBreakdown(after) + ";";
 			}
 			else 
 			{
 				after = res[i];
 				res[i] = CPPJavaLineBreakdown(after) + ";";
 			}
+			total = total.concat(res[i]);
 		}
+		
+		return total;
 	}
 	
 	
@@ -93,11 +103,11 @@ public class CodeConverterDriver {
 				orig = orig.replace("System.out.print(", "System.out.println(");
 				if((orig.indexOf("<< endl") >= 0))
 				{
-					orig = orig.replace("<< endl", ")");
+					orig = orig.replace("<< endl", closing);
 				}
 				else
 				{
-					orig = orig.replace("<<endl", ")");
+					orig = orig.replace("<<endl", closing);
 				}
 			}
 			else
@@ -112,6 +122,6 @@ public class CodeConverterDriver {
 			}
 		}
 		
-		
+		return orig;
 	}
 }
