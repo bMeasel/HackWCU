@@ -7,9 +7,6 @@ public class CodeConverterDriver {
 	}
 	
 	
-	
-	
-	
 	public static String ConvertSelector(int indexFrom, int indexTo, String code) 
 	{
 		if(indexFrom == indexTo) {

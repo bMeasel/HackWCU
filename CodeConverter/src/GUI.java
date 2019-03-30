@@ -57,6 +57,11 @@ public class GUI extends JFrame implements ActionListener
 	
 	public void actionPerformed(ActionEvent e)
 	{
-		JOptionPane.showMessageDialog(null,"Test");
+		//If the convert button is pressed
+		if(convertBtn == e.getSource())
+		{
+			CodeConverterDriver CCD = new CodeConverterDriver();
+			outputText.setText(CCD.ConvertSelector(dropDownListLeft.getSelectedIndex(), dropDownListRight.getSelectedIndex(), inputText.getText()));
+		}
 	}
 }
