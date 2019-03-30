@@ -75,12 +75,43 @@ public class CodeConverterDriver {
 	
 	public static String CPPJavaLineBreakdown(String orig) 
 	{
+		String closing = ")";
 		if((orig.indexOf("cout <<") >= 0) || (orig.indexOf("cout<<") >= 0))
 		{
+			if((orig.indexOf("cout <<") >= 0))
+			{
+				orig = orig.replace("cout <<", "System.out.print(");	
+			}
+			else
+			{
+				orig = orig.replace("cout<<", "System.out.print(");
+			}
+			
+			
 			if((orig.indexOf("<< endl") >= 0) || (orig.indexOf("<<endl") >= 0))
 			{
-				
+				orig = orig.replace("System.out.print(", "System.out.println(");
+				if((orig.indexOf("<< endl") >= 0))
+				{
+					orig = orig.replace("<< endl", ")");
+				}
+				else
+				{
+					orig = orig.replace("<<endl", ")");
+				}
+			}
+			else
+			{
+				orig = orig.concat(closing);
+			}
+			
+			
+			if(orig.indexOf("<<") >= 0)
+			{
+				orig = orig.replace("<<", "+");
 			}
 		}
+		
+		
 	}
 }
