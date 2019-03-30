@@ -25,6 +25,7 @@ public class GUI extends Frame
 		mainPanel.add(dropDownListLeft);
 		mainPanel.add(dropDownListRight);
 		
+		frame.setSize(300, 300);
 		frame.setVisible(true);
 	}
 }

@@ -3,7 +3,7 @@ public class CodeConverterDriver {
 
 	public static void main(String[] args) 
 	{
-		
+		new GUI();
 	}
 	public static String ConvertSelector(int indexFrom, int indexTo, String code) {
 		if(indexFrom == indexTo) {
