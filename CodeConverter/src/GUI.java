@@ -1,7 +1,8 @@
 import java.awt.*;
+import java.awt.event.*;
 import javax.swing.*;
 
-public class GUI extends JFrame
+public class GUI extends JFrame implements ActionListener
 {
 	public JFrame frame;
 	public JPanel mainPanel, dropDownPanel, leftPanel, rightPanel, combinedPanel;
@@ -12,9 +13,12 @@ public class GUI extends JFrame
 	
 	public GUI()
 	{
+		//Initializations
+		String[] codeList = {"Java", "C++"};
+		
 		//Panels and Frame
 		frame = new JFrame("Code Converter");
-		mainPanel = new JPanel(new GridLayout(3,1));
+		mainPanel = new JPanel(new GridLayout(2,1));
 		dropDownPanel = new JPanel();
 		leftPanel = new JPanel(new GridLayout(2,1));
 		rightPanel = new JPanel();
@@ -22,19 +26,21 @@ public class GUI extends JFrame
 		
 		frame.add(mainPanel);
 		
+		leftPanel.add(dropDownPanel);
 		combinedPanel.add(leftPanel);
 		combinedPanel.add(rightPanel);
 		mainPanel.add(combinedPanel);
-		leftPanel.add(dropDownPanel);
 		
 		//ComboBox
-		dropDownListLeft = new JComboBox();
-		dropDownListRight = new JComboBox();
+		dropDownListLeft = new JComboBox(codeList);
+		dropDownListRight = new JComboBox(codeList);
 		dropDownPanel.add(dropDownListLeft);
 		dropDownPanel.add(dropDownListRight);
 		
-		//Buttons
+		//Button
 		convertBtn = new JButton("Convert");
+		convertBtn.setBounds(100, 100, 100, 80);
+		convertBtn.addActionListener(this);
 		mainPanel.add(convertBtn);
 		
 		//TxtAreas
@@ -45,7 +51,12 @@ public class GUI extends JFrame
 		
 		//Frame setup
 		frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		frame.setSize(300, 300);
+		frame.setSize(1000, 1000);
 		frame.setVisible(true);
+	}
+	
+	public void actionPerformed(ActionEvent e)
+	{
+		JOptionPane.showMessageDialog(null,"Test");
 	}
 }
