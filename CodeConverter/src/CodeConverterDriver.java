@@ -71,7 +71,7 @@ public class CodeConverterDriver {
 			else 
 			{
 				after = res[i];
-				res[i] = CPPJavaLineBreakdown(after) + ";";
+				res[i] = CPPJavaLineBreakdown(after);
 			}
 			total = total.concat(res[i]);
 		}
@@ -81,6 +81,29 @@ public class CodeConverterDriver {
 	
 	
 	public static String CPPJavaLineBreakdown(String orig) 
+	{
+		orig = replaceMain(orig);
+		orig = CPPcout(orig);
+		orig = orig.concat(";");
+		return orig;
+	}
+	
+	
+	public static String replaceMain(String orig)
+	{
+		if(orig.indexOf("int main(") >= 0)
+		{
+			orig.replace("int main(","public static void main(");
+		}
+		else if(orig.indexOf("") >= 0)
+		{
+			
+		}
+		return orig;
+	}
+	
+	
+	public static String CPPcout(String orig)
 	{
 		String closing = ")";
 		if((orig.indexOf("cout <<") >= 0) || (orig.indexOf("cout<<") >= 0))
