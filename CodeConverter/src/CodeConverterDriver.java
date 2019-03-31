@@ -138,7 +138,14 @@ public class CodeConverterDriver {
 				}
 				else if(res[i].indexOf("main") >= 0)
 				{
-					res[i] = CPPJavaLineBreakdown(after, addInput, 2, orig) + ";";
+					if(addInput >= 0)
+					{
+						res[i] = CPPJavaLineBreakdown(after, addInput, 2, orig) + ";" + "Scanner in = new Scanner(System.in);";
+					}
+					else
+					{
+						res[i] = CPPJavaLineBreakdown(after, addInput, 2, orig) + ";";
+					}
 				}
 				else
 				{
@@ -153,7 +160,7 @@ public class CodeConverterDriver {
 	
 	public static String CPPJavaLineBreakdown(String orig, int addInput, int beginning, String full) 
 	{
-		if((beginning == 1 || beginning == 2) && addInput >= 0)
+		if(beginning == 1 || beginning == 2)
 		{
 			orig = CPPcin(orig, beginning);
 		}
@@ -228,10 +235,19 @@ public class CodeConverterDriver {
 		{
 			line = line.replace("cin >>", "");
 			line = line.replace("cin>>", "");
+			line = line.trim();
 		}
 		String modifier = "";
-		int index = orig.indexOf(line) - 10;
-		modifier = orig.substring(index, orig.indexOf(line));
+		int index; 
+		if(orig.indexOf(line) >= 9)
+		{
+			index = orig.indexOf(line) - 9;
+		}
+		else
+		{
+			index = 0;
+		}
+		modifier = orig.substring(index, orig.indexOf(line)+2);
 		if(modifier.indexOf("boolean") >= 0)
 		{
 			line = line.concat(" = in.hasNext()");
@@ -271,36 +287,16 @@ public class CodeConverterDriver {
 	
 	public static String CPPcin(String orig, int beginning)
 	{
-		if((orig.indexOf("#include <iostream>") >= 0) && beginning == 1)
+		/*if((orig.indexOf("#include <iostream>") >= 0) && beginning == 1)
 		{
 			orig = orig.replace("#include <iostream>", "import java.util.Scanner;");
-			orig = orig.replace("using namespace std", "");
-		}
-		if(beginning == 2)
-		{
-			orig = createScanner(orig);
-			return orig;
-		}
-		else
-		{
-			return orig;
-		}
-	}
-	
-	
-	public static String createScanner(String orig)
-	{
-		int index = orig.indexOf("{", orig.indexOf("main"));
-		String newStr = "";
-		String addScanner = "Scanner in = new Scanner(System.in);";
-		for(int i = 0; i < orig.length(); i++)
-		{
-			newStr += orig.charAt(i);
-			if(i == index)
+			if(orig.indexOf("using namespace std") >= 0)
 			{
-				newStr += addScanner;
+				orig = orig.replace("using namespace std", "");
 			}
-		}
-		return newStr;
+		}*/
+			return orig;
 	}
+	
+	
 }
