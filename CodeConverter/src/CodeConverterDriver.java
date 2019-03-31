@@ -26,8 +26,9 @@ public class CodeConverterDriver {
 	
 	public static String JavaToCPP(String orig) 
 	{
+
+		orig = orig.replace("import java.util.Scanner;", "#include <iostream>\nusing namespace std;");
 		orig = replaceMain(orig); 
-		orig = orig.replace("import java.util.Scanner;", "#include <iostream>\nusing namespace std;\n");
 		String[] res = orig.split(";");
 		String after;
 		String total = "";
@@ -36,7 +37,7 @@ public class CodeConverterDriver {
 				after = res[i];
 			if(res[i].indexOf("Scanner in = new Scanner(System.in)") >= 0)
 			{
-				res[i] = JavaCPPLineBreakdown(after,orig) + "\n"; 
+				res[i] = JavaCPPLineBreakdown(after,orig) + ""; 
 			}
 			else if(i < res.length-1)
 			{
@@ -50,7 +51,7 @@ public class CodeConverterDriver {
 			}
 			total = total.concat(res[i]);
 		}
-		total = replaceMain(total);
+
 		return total;
 	}
 	
