@@ -44,7 +44,6 @@ public class indexProcessing extends HttpServlet {
 		}
 	}
 	
-	
 	public static String JavaToCPP(String orig) 
 	{
 		orig = replaceMain(orig); 
@@ -56,7 +55,7 @@ public class indexProcessing extends HttpServlet {
 				after = res[i];
 			if(i < res.length-1)
 			{
-				res[i] = JavaCPPLineBreakdown(after,orig) + ";\n";
+				res[i] = JavaCPPLineBreakdown(after,orig) + ";";
 			}
 			else
 			{
@@ -71,6 +70,7 @@ public class indexProcessing extends HttpServlet {
 	public static String JavaCPPLineBreakdown(String after,String orig)
 	{
 		after = JavaOut(after);
+		after = JavaIn(after);
 		return after;
 	}
 	
@@ -79,23 +79,43 @@ public class indexProcessing extends HttpServlet {
 	{
 		if(orig.indexOf("System.out.print") >= 0)
 		{
-			//test for print w/out end line
-			if(orig.indexOf(".print(") >= 0)
-			{
-				orig = orig.replace("System.out.print(", "cout << ");
-				orig = orig.replace(orig.charAt(orig.length()-1), ' ');
-				orig = orig.trim();
-			}
 			//test for print w/ end line
-			else if(orig.indexOf(".println") >= 0)
+			if(orig.indexOf(".println") >= 0)
 			{
 				orig = orig.replace("System.out.println(", "cout << ");
-				orig = orig.replace(orig.charAt(orig.length()-1), ' ');
+				orig = orig.replace(orig.charAt(orig.length()-1),' ');
 				orig = orig.trim();
 				orig = orig.concat(" << endl");
 			}
+			//test for print w/out end line
+			else if(orig.indexOf(".print") >= 0)
+			{
+				orig = orig.replace("System.out.print(", "cout << ");
+				orig = orig.trim();
+				orig = orig.replace(orig.charAt(orig.length()-1),' ');
+			}			
 			//test for any plus marks inside system.out
 			orig = ComboOut(orig);
+		}
+		return orig;
+	}
+	
+	
+	public static String JavaIn(String orig)
+	{
+		String cin = "cin >> ";
+		orig = orig.replace("Scanner in = new Scanner(System.in)", "");
+		if(orig.indexOf("= in.") >= 0)
+		{
+			orig = orig.replace("= in.hasNext()", "");
+			orig = orig.replace("= in.nextDouble()", "");
+			orig = orig.replace("= in.nextInt()", "");
+			orig = orig.replace("= in.nextFloat()", "");
+			orig = orig.replace("= in.nextShort()", "");
+			orig = orig.replace("= in.nextLong()", "");
+			orig = orig.replace("= in.next().charAt(0)", "");
+			orig = orig.replace("= in.nextLine()", "");
+			orig = cin.concat(orig);
 		}
 		return orig;
 	}
@@ -131,7 +151,10 @@ public class indexProcessing extends HttpServlet {
 	{
 		for(int i = 0; i < orig.length(); i++)
 		{
-			orig = orig.replace("+", "<<");
+			if(orig.indexOf("+") >= 0)
+			{
+				orig = orig.replace("+", "<<");
+			}
 		}
 		return orig;
 	}
@@ -158,13 +181,13 @@ public class indexProcessing extends HttpServlet {
 			after = res[i];
 				if(res[i].indexOf("using") >= 0)
 				{
-					res[i] = CPPJavaLineBreakdown(after, addInput, 1, orig) + ";\n";
+					res[i] = CPPJavaLineBreakdown(after, addInput, 1, orig) + ";";
 				}
 				else if(res[i].indexOf("main") >= 0)
 				{
 					if(addInput >= 0)
 					{
-						res[i] = CPPJavaLineBreakdown(after, addInput, 2, orig) + ";\n Scanner in = new Scanner(System.in);\n";
+						res[i] = CPPJavaLineBreakdown(after, addInput, 2, orig) + "; Scanner in = new Scanner(System.in);\n";
 					}
 					else
 					{
@@ -173,7 +196,7 @@ public class indexProcessing extends HttpServlet {
 				}
 				else if(i < res.length-1)
 				{
-					res[i] = CPPJavaLineBreakdown(after, addInput, 0, orig) + ";\n";
+					res[i] = CPPJavaLineBreakdown(after, addInput, 0, orig) + ";";
 				}
 				else
 				{
@@ -191,7 +214,6 @@ public class indexProcessing extends HttpServlet {
 		if(beginning == 1 || beginning == 2)
 		{
 			orig = CPPcin(orig, beginning);
-			return orig;
 		}
 		orig = CPPcout(orig);
 		orig = CPPscannerIn(full, orig);
@@ -217,14 +239,13 @@ public class indexProcessing extends HttpServlet {
 	
 	public static String CPPcout(String orig)
 	{
-		String closing = ")";
 		if((orig.indexOf("cout <<") >= 0) || (orig.indexOf("cout<<") >= 0))
 		{
 			if((orig.indexOf("cout <<") >= 0))
 			{
 				orig = orig.replace("cout <<", "System.out.print(");
 			}
-			else
+			if((orig.indexOf("cout<<") >= 0))
 			{
 				orig = orig.replace("cout<<", "System.out.print(");
 			}
@@ -235,16 +256,16 @@ public class indexProcessing extends HttpServlet {
 				orig = orig.replace("System.out.print(", "System.out.println(");
 				if((orig.indexOf("<< endl") >= 0))
 				{
-					orig = orig.replace("<< endl", closing);
+					orig = orig.replace("<< endl", ")");
 				}
-				else
+				if((orig.indexOf("<<endl") >= 0))
 				{
-					orig = orig.replace("<<endl", closing);
+					orig = orig.replace("<<endl", ")");
 				}
 			}
 			else
 			{
-				orig = orig.concat(closing);
+				orig = orig.concat(")");
 			}
 			
 			
@@ -311,20 +332,6 @@ public class indexProcessing extends HttpServlet {
 		}
 		
 		return line;
-	}
-	
-	
-	public static String CPPcin(String orig, int beginning)
-	{
-		/*if((orig.indexOf("#include <iostream>") >= 0) && beginning == 1)
-		{
-			orig = orig.replace("#include <iostream>", "import java.util.Scanner;");
-			if(orig.indexOf("using namespace std") >= 0)
-			{
-				orig = orig.replace("using namespace std", "");
-			}
-		}*/
-			return orig;
 	}
 
 }
