@@ -35,7 +35,7 @@ public class CodeConverterDriver {
 				after = res[i];
 			if(i < res.length-1)
 			{
-				res[i] = JavaCPPLineBreakdown(after,orig) + ";\n";
+				res[i] = JavaCPPLineBreakdown(after,orig) + ";";
 			}
 			else
 			{
@@ -161,13 +161,13 @@ public class CodeConverterDriver {
 			after = res[i];
 				if(res[i].indexOf("using") >= 0)
 				{
-					res[i] = CPPJavaLineBreakdown(after, addInput, 1, orig) + ";\n";
+					res[i] = CPPJavaLineBreakdown(after, addInput, 1, orig) + ";";
 				}
 				else if(res[i].indexOf("main") >= 0)
 				{
 					if(addInput >= 0)
 					{
-						res[i] = CPPJavaLineBreakdown(after, addInput, 2, orig) + ";\n Scanner in = new Scanner(System.in);\n";
+						res[i] = CPPJavaLineBreakdown(after, addInput, 2, orig) + "; Scanner in = new Scanner(System.in);\n";
 					}
 					else
 					{
@@ -176,7 +176,7 @@ public class CodeConverterDriver {
 				}
 				else if(i < res.length-1)
 				{
-					res[i] = CPPJavaLineBreakdown(after, addInput, 0, orig) + ";\n";
+					res[i] = CPPJavaLineBreakdown(after, addInput, 0, orig) + ";";
 				}
 				else
 				{
