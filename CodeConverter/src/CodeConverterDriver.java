@@ -58,12 +58,52 @@ public class CodeConverterDriver {
 			if(orig.indexOf(".print(") >= 0)
 			{
 				orig = orig.replace("System.out.print(", "cout << ");
+				orig = orig.replace(")","");
 			}
+			//test for print w/ end line
 			else if(orig.indexOf(".println") >= 0)
 			{
 				orig = orig.replace("System.out.println(", "cout << ");
 				orig = orig.replace(")", " << endl");
 			}
+			//test for any plus marks inside system.out
+			orig = ComboOut(orig);
+		}
+		return orig;
+	}
+	
+	
+	public static String ComboOut(String orig)
+	{
+		String[] res = orig.split("\"");
+		String total = "";
+		for(int i = 0; i < res.length; i++)
+		{
+			if(i % 2 != 1)
+			{
+				res[i] = JavaModOut(res[i]);
+			}
+			
+			if(i < res.length-1)
+			{
+				total = total.concat(res[i]);
+				total = total.concat("\"");
+			}
+			else
+			{
+				total = total.concat(res[i]);
+			}
+		}
+		
+		return total;
+	}
+	
+	
+	public static String JavaModOut(String orig)
+	{
+		for(int i = 0; i < orig.length(); i++)
+		{
+			orig = orig.replace("+", "<<");
 		}
 		return orig;
 	}
@@ -75,35 +115,35 @@ public class CodeConverterDriver {
 		String[] res = orig.split(";");
 		String after;
 		//test for C++ using system input
-		int num = orig.indexOf('>');
-		char ch = 'a';
-		char b = ' ';
+		int addInput;
+		if(orig.indexOf("cin >>") >= 0)
+		{
+			addInput = orig.indexOf("cin >>");
+		}
+		else
+		{
+			addInput = orig.indexOf("cin>>");
+		}
 		String total = "";
-		
 		for(int i = 0; i < res.length; i++) 
 		{
-			if(num >=0)
-			{
-				ch = orig.charAt(num+1);
-				b = orig.charAt(num);
-			}
-			if((num >= 0) && (ch == b) && (i == 0))
-			{
-				after = res[i];
-				res[i] = "import java.util.Scanner;" + CPPJavaLineBreakdown(after) + ";";
-			}
-			else 
-			{
-				after = res[i];
+			after = res[i];
 				if(i < res.length-1)
 				{
-					res[i] = CPPJavaLineBreakdown(after) + ";";
+					res[i] = CPPJavaLineBreakdown(after, addInput, 0, orig) + ";";
+				}
+				else if(res[i].indexOf("using") >= 0)
+				{
+					res[i] = CPPJavaLineBreakdown(after, addInput, 1, orig) + ";";
+				}
+				else if(res[i].indexOf("main") >= 0)
+				{
+					res[i] = CPPJavaLineBreakdown(after, addInput, 2, orig) + ";";
 				}
 				else
 				{
-					res[i] = CPPJavaLineBreakdown(after);
+					res[i] = CPPJavaLineBreakdown(after, addInput, 0, orig);
 				}
-			}
 			total = total.concat(res[i]);
 		}
 		
@@ -111,9 +151,14 @@ public class CodeConverterDriver {
 	}
 	
 	
-	public static String CPPJavaLineBreakdown(String orig) 
+	public static String CPPJavaLineBreakdown(String orig, int addInput, int beginning, String full) 
 	{
+		if((beginning == 1 || beginning == 2) && addInput >= 0)
+		{
+			orig = CPPcin(orig, beginning);
+		}
 		orig = CPPcout(orig);
+		orig = CPPscannerIn(full, orig);
 		return orig;
 	}
 	
@@ -174,5 +219,88 @@ public class CodeConverterDriver {
 		}
 		
 		return orig;
+	}
+	
+	
+	public static String CPPscannerIn(String orig, String line)
+	{
+		if(line.indexOf("cin >>") >= 0 || line.indexOf("cin>>") >= 0)
+		{
+			line = line.replace("cin >>", "");
+			line = line.replace("cin>>", "");
+		}
+		String modifier = "";
+		int index = orig.indexOf(line) - 10;
+		modifier = orig.substring(index, orig.indexOf(line));
+		if(modifier.indexOf("boolean") >= 0)
+		{
+			line = line.concat(" = in.hasNext()");
+		}
+		else if(modifier.indexOf("int") >= 3)
+		{
+			line = line.concat(" = in.nextInt()");
+		}
+		else if(modifier.indexOf("double") >= 0)
+		{
+			line = line.concat(" = in.nextDouble()");
+		}
+		else if(modifier.indexOf("String") >= 0)
+		{
+			line = line.concat(" = in.nextLine()");
+		}
+		else if(modifier.indexOf("char") >= 0)
+		{
+			line = line.concat(" = in.next().charAt(0)");
+		}
+		else if(modifier.indexOf("float") >= 0)
+		{
+			line = line.concat(" = in.nextFloat()");
+		}
+		else if(modifier.indexOf("long") >= 0)
+		{
+			line = line.concat(" = in.nextLong()");
+		}
+		else if(modifier.indexOf("short") >= 0)
+		{
+			line = line.concat(" = in.nextShort()");
+		}
+		
+		return line;
+	}
+	
+	
+	public static String CPPcin(String orig, int beginning)
+	{
+		if((orig.indexOf("#include <iostream>") >= 0) && beginning == 1)
+		{
+			orig = orig.replace("#include <iostream>", "import java.util.Scanner;");
+			orig = orig.replace("using namespace std", "");
+		}
+		if(beginning == 2)
+		{
+			orig = createScanner(orig);
+			return orig;
+		}
+		else
+		{
+			return orig;
+		}
+	}
+	
+	
+	public static String createScanner(String orig)
+	{
+		int index = orig.indexOf("{", orig.indexOf("main"));
+		String newStr = "";
+		String addScanner = "Scanner in = new Scanner(System.in);";
+		for(int i = 0; i < orig.length(); i++)
+		{
+			newStr += orig.charAt(i);
+			if(i == index)
+			{
+				newStr += addScanner;
+			}
+		}
+		return newStr;
 	}
 }
