@@ -26,27 +26,31 @@ public class CodeConverterDriver {
 	
 	public static String JavaToCPP(String orig) 
 	{
+		orig = replaceMain(orig); 
 		String[] res = orig.split(";");
 		String after;
 		String total = "";
 		for(int i = 0; i < res.length; i++)
 		{
-			after = res[i];
-			if(after.indexOf("main(") >= 0)
+				after = res[i];
+			if(i < res.length-1)
 			{
-				after = replaceMain(after);
+				res[i] = JavaCPPLineBreakdown(after,orig) + ";\n";
 			}
-			res[i] = JavaCPPLineBreakdown(after) + ";";
+			else
+			{
+				res[i] = JavaCPPLineBreakdown(after,orig);
+			}
 			total = total.concat(res[i]);
 		}
 		return total;
 	}
 	
 	
-	public static String JavaCPPLineBreakdown(String orig)
+	public static String JavaCPPLineBreakdown(String after,String orig)
 	{
-		orig = JavaOut(orig);
-		return orig;
+		after = JavaOut(after);
+		return after;
 	}
 	
 	
@@ -58,13 +62,16 @@ public class CodeConverterDriver {
 			if(orig.indexOf(".print(") >= 0)
 			{
 				orig = orig.replace("System.out.print(", "cout << ");
-				orig = orig.replace(")","");
+				orig = orig.replace(orig.charAt(orig.length()-1), ' ');
+				orig = orig.trim();
 			}
 			//test for print w/ end line
 			else if(orig.indexOf(".println") >= 0)
 			{
 				orig = orig.replace("System.out.println(", "cout << ");
-				orig = orig.replace(")", " << endl");
+				orig = orig.replace(orig.charAt(orig.length()-1), ' ');
+				orig = orig.trim();
+				orig = orig.concat(" << endl");
 			}
 			//test for any plus marks inside system.out
 			orig = ComboOut(orig);
@@ -115,12 +122,12 @@ public class CodeConverterDriver {
 		String[] res = orig.split(";");
 		String after;
 		//test for C++ using system input
-		int addInput;
+		int addInput = (-1);
 		if(orig.indexOf("cin >>") >= 0)
 		{
 			addInput = orig.indexOf("cin >>");
 		}
-		else
+		if(orig.indexOf("cin>>") >= 0)
 		{
 			addInput = orig.indexOf("cin>>");
 		}
@@ -128,24 +135,24 @@ public class CodeConverterDriver {
 		for(int i = 0; i < res.length; i++) 
 		{
 			after = res[i];
-				if(i < res.length-1)
+				if(res[i].indexOf("using") >= 0)
 				{
-					res[i] = CPPJavaLineBreakdown(after, addInput, 0, orig) + ";";
-				}
-				else if(res[i].indexOf("using") >= 0)
-				{
-					res[i] = CPPJavaLineBreakdown(after, addInput, 1, orig) + ";";
+					res[i] = CPPJavaLineBreakdown(after, addInput, 1, orig) + ";\n";
 				}
 				else if(res[i].indexOf("main") >= 0)
 				{
 					if(addInput >= 0)
 					{
-						res[i] = CPPJavaLineBreakdown(after, addInput, 2, orig) + ";" + "Scanner in = new Scanner(System.in);";
+						res[i] = CPPJavaLineBreakdown(after, addInput, 2, orig) + ";\n Scanner in = new Scanner(System.in);\n";
 					}
 					else
 					{
-						res[i] = CPPJavaLineBreakdown(after, addInput, 2, orig) + ";";
+						res[i] = CPPJavaLineBreakdown(after, addInput, 2, orig) + ";\n";
 					}
+				}
+				else if(i < res.length-1)
+				{
+					res[i] = CPPJavaLineBreakdown(after, addInput, 0, orig) + ";\n";
 				}
 				else
 				{
@@ -163,6 +170,7 @@ public class CodeConverterDriver {
 		if(beginning == 1 || beginning == 2)
 		{
 			orig = CPPcin(orig, beginning);
+			return orig;
 		}
 		orig = CPPcout(orig);
 		orig = CPPscannerIn(full, orig);
@@ -177,7 +185,7 @@ public class CodeConverterDriver {
 			orig = orig.replace("int main()","public static void main(String[] args)");
 			return orig;
 		}
-		else if(orig.indexOf("public static void main(String[] args)") >= 0)
+		if(orig.indexOf("public static void main(String[] args)") >= 0)
 		{
 			orig = orig.replace("public static void main(String[] args)", "int main()");
 			return orig;
