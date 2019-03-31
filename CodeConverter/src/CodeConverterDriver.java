@@ -27,19 +27,26 @@ public class CodeConverterDriver {
 	public static String JavaToCPP(String orig) 
 	{
 		orig = replaceMain(orig); 
+		orig = orig.replace("import java.util.Scanner;", "#include <iostream>\nusing namespace std;\n");
 		String[] res = orig.split(";");
 		String after;
 		String total = "";
 		for(int i = 0; i < res.length; i++)
 		{
 				after = res[i];
-			if(i < res.length-1)
+			if(res[i].indexOf("Scanner in = new Scanner(System.in)") >= 0)
+			{
+				res[i] = JavaCPPLineBreakdown(after,orig) + "\n"; 
+			}
+			else if(i < res.length-1)
 			{
 				res[i] = JavaCPPLineBreakdown(after,orig) + ";";
 			}
 			else
 			{
-				res[i] = JavaCPPLineBreakdown(after,orig);
+				res[i] = "\n";
+				res[i] = res[i].concat(JavaCPPLineBreakdown(after,orig));
+				
 			}
 			total = total.concat(res[i]);
 		}
@@ -84,8 +91,9 @@ public class CodeConverterDriver {
 	
 	public static String JavaIn(String orig)
 	{
-		String cin = "cin >>";
+		String cin = "\ncin >>";
 		orig = orig.replace("Scanner in = new Scanner(System.in)", "");
+		orig = orig.trim();
 		if(orig.indexOf("= in.") >= 0)
 		{
 			orig = orig.replace("= in.hasNext()", "");
