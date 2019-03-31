@@ -130,19 +130,19 @@ public class CodeConverterDriver {
 			after = res[i];
 				if(i < res.length-1)
 				{
-					res[i] = CPPJavaLineBreakdown(after, addInput, 0) + ";";
+					res[i] = CPPJavaLineBreakdown(after, addInput, 0, orig) + ";";
 				}
 				else if(res[i].indexOf("using") >= 0)
 				{
-					res[i] = CPPJavaLineBreakdown(after, addInput, 1) + ";";
+					res[i] = CPPJavaLineBreakdown(after, addInput, 1, orig) + ";";
 				}
 				else if(res[i].indexOf("main") >= 0)
 				{
-					res[i] = CPPJavaLineBreakdown(after, addInput, 2) + ";";
+					res[i] = CPPJavaLineBreakdown(after, addInput, 2, orig) + ";";
 				}
 				else
 				{
-					res[i] = CPPJavaLineBreakdown(after, addInput, 0);
+					res[i] = CPPJavaLineBreakdown(after, addInput, 0, orig);
 				}
 			total = total.concat(res[i]);
 		}
@@ -151,13 +151,14 @@ public class CodeConverterDriver {
 	}
 	
 	
-	public static String CPPJavaLineBreakdown(String orig, int addInput, int beginning) 
+	public static String CPPJavaLineBreakdown(String orig, int addInput, int beginning, String full) 
 	{
 		if((beginning == 1 || beginning == 2) && addInput >= 0)
 		{
 			orig = CPPcin(orig, beginning);
 		}
 		orig = CPPcout(orig);
+		orig = CPPscannerIn(full, orig);
 		return orig;
 	}
 	
@@ -218,6 +219,12 @@ public class CodeConverterDriver {
 		}
 		
 		return orig;
+	}
+	
+	
+	public static String CPPscannerIn(String orig, String line)
+	{
+		return line;
 	}
 	
 	
