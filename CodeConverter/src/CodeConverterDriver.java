@@ -48,11 +48,12 @@ public class CodeConverterDriver {
 	
 	public static String CPPToJava(String orig) 
 	{
+		orig = replaceMain(orig);
 		String[] res = orig.split(";");
 		String after;
 		//test for C++ using system input
 		int num = orig.indexOf('>');
-		char ch = ' ';
+		char ch = 'a';
 		char b = ' ';
 		String total = "";
 		
@@ -71,7 +72,14 @@ public class CodeConverterDriver {
 			else 
 			{
 				after = res[i];
-				res[i] = CPPJavaLineBreakdown(after);
+				if(i < res.length-1)
+				{
+					res[i] = CPPJavaLineBreakdown(after) + ";";
+				}
+				else
+				{
+					res[i] = CPPJavaLineBreakdown(after);
+				}
 			}
 			total = total.concat(res[i]);
 		}
@@ -82,22 +90,22 @@ public class CodeConverterDriver {
 	
 	public static String CPPJavaLineBreakdown(String orig) 
 	{
-		orig = replaceMain(orig);
 		orig = CPPcout(orig);
-		orig = orig.concat(";");
 		return orig;
 	}
 	
 	
 	public static String replaceMain(String orig)
 	{
-		if(orig.indexOf("int main(") >= 0)
+		if(orig.indexOf("int main()") >= 0)
 		{
-			orig.replace("int main(","public static void main(");
+			orig = orig.replace("int main()","public static void main(String[] args)");
+			return orig;
 		}
-		else if(orig.indexOf("") >= 0)
+		else if(orig.indexOf("public static void main(String[] args)") >= 0)
 		{
-			
+			orig = orig.replace("public static void main(String[] args)", "int main()");
+			return orig;
 		}
 		return orig;
 	}
