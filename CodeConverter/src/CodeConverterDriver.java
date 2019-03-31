@@ -58,21 +58,21 @@ public class CodeConverterDriver {
 	{
 		if(orig.indexOf("System.out.print") >= 0)
 		{
-			//test for print w/out end line
-			if(orig.indexOf(".print(") >= 0)
-			{
-				orig = orig.replace("System.out.print(", "cout << ");
-				orig = orig.replace(orig.charAt(orig.length()-1), ' ');
-				orig = orig.trim();
-			}
 			//test for print w/ end line
-			else if(orig.indexOf(".println") >= 0)
+			if(orig.indexOf(".println") >= 0)
 			{
 				orig = orig.replace("System.out.println(", "cout << ");
-				orig = orig.replace(orig.charAt(orig.length()-1), ' ');
+				orig = orig.replace(orig.charAt(orig.length()-1),' ');
 				orig = orig.trim();
 				orig = orig.concat(" << endl");
 			}
+			//test for print w/out end line
+			else if(orig.indexOf(".print") >= 0)
+			{
+				orig = orig.replace("System.out.print(", "cout << ");
+				orig = orig.trim();
+				orig = orig.replace(orig.charAt(orig.length()-1),' ');
+			}			
 			//test for any plus marks inside system.out
 			orig = ComboOut(orig);
 		}
@@ -110,7 +110,10 @@ public class CodeConverterDriver {
 	{
 		for(int i = 0; i < orig.length(); i++)
 		{
-			orig = orig.replace("+", "<<");
+			if(orig.indexOf("+") >= 0)
+			{
+				orig = orig.replace("+", "<<");
+			}
 		}
 		return orig;
 	}
@@ -170,7 +173,6 @@ public class CodeConverterDriver {
 		if(beginning == 1 || beginning == 2)
 		{
 			orig = CPPcin(orig, beginning);
-			return orig;
 		}
 		orig = CPPcout(orig);
 		orig = CPPscannerIn(full, orig);
@@ -196,14 +198,13 @@ public class CodeConverterDriver {
 	
 	public static String CPPcout(String orig)
 	{
-		String closing = ")";
 		if((orig.indexOf("cout <<") >= 0) || (orig.indexOf("cout<<") >= 0))
 		{
 			if((orig.indexOf("cout <<") >= 0))
 			{
 				orig = orig.replace("cout <<", "System.out.print(");	
 			}
-			else
+			if((orig.indexOf("cout<<") >= 0))
 			{
 				orig = orig.replace("cout<<", "System.out.print(");
 			}
@@ -214,16 +215,16 @@ public class CodeConverterDriver {
 				orig = orig.replace("System.out.print(", "System.out.println(");
 				if((orig.indexOf("<< endl") >= 0))
 				{
-					orig = orig.replace("<< endl", closing);
+					orig = orig.replace("<< endl", ")");
 				}
-				else
+				if((orig.indexOf("<<endl") >= 0))
 				{
-					orig = orig.replace("<<endl", closing);
+					orig = orig.replace("<<endl", ")");
 				}
 			}
 			else
 			{
-				orig = orig.concat(closing);
+				orig = orig.concat(")");
 			}
 			
 			
