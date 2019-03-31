@@ -26,23 +26,20 @@ public class CodeConverterDriver {
 	
 	public static String JavaToCPP(String orig) 
 	{
+		orig = replaceMain(orig); 
 		String[] res = orig.split(";");
 		String after;
 		String total = "";
 		for(int i = 0; i < res.length; i++)
 		{
-			after = res[i];
-			if(after.indexOf("main(") >= 0)
-			{
-				after = replaceMain(after);
-			}
+				after = res[i];
 			if(i < res.length-1)
 			{
-				res[i] = JavaCPPLineBreakdown(after) + ";\n";
+				res[i] = JavaCPPLineBreakdown(after,orig) + ";\n";
 			}
 			else
 			{
-				res[i] = JavaCPPLineBreakdown(after);
+				res[i] = JavaCPPLineBreakdown(after,orig);
 			}
 			total = total.concat(res[i]);
 		}
@@ -50,10 +47,10 @@ public class CodeConverterDriver {
 	}
 	
 	
-	public static String JavaCPPLineBreakdown(String orig)
+	public static String JavaCPPLineBreakdown(String after,String orig)
 	{
-		orig = JavaOut(orig);
-		return orig;
+		after = JavaOut(after);
+		return after;
 	}
 	
 	
@@ -65,13 +62,16 @@ public class CodeConverterDriver {
 			if(orig.indexOf(".print(") >= 0)
 			{
 				orig = orig.replace("System.out.print(", "cout << ");
-				orig = orig.replace(")","");
+				orig = orig.replace(orig.charAt(orig.length()-1), ' ');
+				orig = orig.trim();
 			}
 			//test for print w/ end line
 			else if(orig.indexOf(".println") >= 0)
 			{
 				orig = orig.replace("System.out.println(", "cout << ");
-				orig = orig.replace(")", " << endl");
+				orig = orig.replace(orig.charAt(orig.length()-1), ' ');
+				orig = orig.trim();
+				orig = orig.concat(" << endl");
 			}
 			//test for any plus marks inside system.out
 			orig = ComboOut(orig);
@@ -170,6 +170,7 @@ public class CodeConverterDriver {
 		if(beginning == 1 || beginning == 2)
 		{
 			orig = CPPcin(orig, beginning);
+			return orig;
 		}
 		orig = CPPcout(orig);
 		orig = CPPscannerIn(full, orig);
@@ -184,7 +185,7 @@ public class CodeConverterDriver {
 			orig = orig.replace("int main()","public static void main(String[] args)");
 			return orig;
 		}
-		else if(orig.indexOf("public static void main(String[] args)") >= 0)
+		if(orig.indexOf("public static void main(String[] args)") >= 0)
 		{
 			orig = orig.replace("public static void main(String[] args)", "int main()");
 			return orig;
