@@ -27,22 +27,30 @@ public class CodeConverterDriver {
 	public static String JavaToCPP(String orig) 
 	{
 		orig = replaceMain(orig); 
+		orig = orig.replace("import java.util.Scanner;", "#include <iostream>\nusing namespace std;\n");
 		String[] res = orig.split(";");
 		String after;
 		String total = "";
 		for(int i = 0; i < res.length; i++)
 		{
 				after = res[i];
-			if(i < res.length-1)
+			if(res[i].indexOf("Scanner in = new Scanner(System.in)") >= 0)
+			{
+				res[i] = JavaCPPLineBreakdown(after,orig) + "\n"; 
+			}
+			else if(i < res.length-1)
 			{
 				res[i] = JavaCPPLineBreakdown(after,orig) + ";";
 			}
 			else
 			{
-				res[i] = JavaCPPLineBreakdown(after,orig);
+				res[i] = "\n";
+				res[i] = res[i].concat(JavaCPPLineBreakdown(after,orig));
+				
 			}
 			total = total.concat(res[i]);
 		}
+		total = replaceMain(total);
 		return total;
 	}
 	
@@ -62,15 +70,15 @@ public class CodeConverterDriver {
 			//test for print w/ end line
 			if(orig.indexOf(".println") >= 0)
 			{
-				orig = orig.replace("System.out.println(", "cout << ");
+				orig = orig.replace("System.out.println(", "cout <<");
 				orig = orig.replace(orig.charAt(orig.length()-1),' ');
 				orig = orig.trim();
-				orig = orig.concat(" << endl");
+				orig = orig.concat("<< endl");
 			}
 			//test for print w/out end line
 			else if(orig.indexOf(".print") >= 0)
 			{
-				orig = orig.replace("System.out.print(", "cout << ");
+				orig = orig.replace("System.out.print(", "cout <<");
 				orig = orig.trim();
 				orig = orig.replace(orig.charAt(orig.length()-1),' ');
 			}			
@@ -83,8 +91,9 @@ public class CodeConverterDriver {
 	
 	public static String JavaIn(String orig)
 	{
-		String cin = "cin >> ";
+		String cin = "\ncin >>";
 		orig = orig.replace("Scanner in = new Scanner(System.in)", "");
+		orig = orig.trim();
 		if(orig.indexOf("= in.") >= 0)
 		{
 			orig = orig.replace("= in.hasNext()", "");
@@ -167,11 +176,11 @@ public class CodeConverterDriver {
 				{
 					if(addInput >= 0)
 					{
-						res[i] = CPPJavaLineBreakdown(after, addInput, 2, orig) + "; Scanner in = new Scanner(System.in);\n";
+						res[i] = CPPJavaLineBreakdown(after, addInput, 2, orig) + ";\nScanner in = new Scanner(System.in);\n";
 					}
 					else
 					{
-						res[i] = CPPJavaLineBreakdown(after, addInput, 2, orig) + ";\n";
+						res[i] = CPPJavaLineBreakdown(after, addInput, 2, orig) + ";";
 					}
 				}
 				else if(i < res.length-1)
@@ -208,9 +217,19 @@ public class CodeConverterDriver {
 			orig = orig.replace("int main()","public static void main(String[] args)");
 			return orig;
 		}
+		if(orig.indexOf("int main( ") >=0)
+		{
+			orig = orig.replace("int main( ", "int main()");
+			return orig;
+		}
 		if(orig.indexOf("public static void main(String[] args)") >= 0)
 		{
 			orig = orig.replace("public static void main(String[] args)", "int main()");
+			return orig;
+		}
+		if(orig.indexOf("public static void main()") >= 0)
+		{
+			orig = orig.replace("public static void main()", "int main()");
 			return orig;
 		}
 		return orig;
@@ -280,35 +299,35 @@ public class CodeConverterDriver {
 		modifier = orig.substring(index, orig.indexOf(line)+2);
 		if(modifier.indexOf("boolean") >= 0)
 		{
-			line = line.concat(" = in.hasNext()");
+			line = line.concat("= in.hasNext()");
 		}
 		else if(modifier.indexOf("int") >= 3)
 		{
-			line = line.concat(" = in.nextInt()");
+			line = line.concat("= in.nextInt()");
 		}
 		else if(modifier.indexOf("double") >= 0)
 		{
-			line = line.concat(" = in.nextDouble()");
+			line = line.concat("= in.nextDouble()");
 		}
 		else if(modifier.indexOf("String") >= 0)
 		{
-			line = line.concat(" = in.nextLine()");
+			line = line.concat("= in.nextLine()");
 		}
 		else if(modifier.indexOf("char") >= 0)
 		{
-			line = line.concat(" = in.next().charAt(0)");
+			line = line.concat("= in.next().charAt(0)");
 		}
 		else if(modifier.indexOf("float") >= 0)
 		{
-			line = line.concat(" = in.nextFloat()");
+			line = line.concat("= in.nextFloat()");
 		}
 		else if(modifier.indexOf("long") >= 0)
 		{
-			line = line.concat(" = in.nextLong()");
+			line = line.concat("= in.nextLong()");
 		}
 		else if(modifier.indexOf("short") >= 0)
 		{
-			line = line.concat(" = in.nextShort()");
+			line = line.concat("= in.nextShort()");
 		}
 		
 		return line;
@@ -317,14 +336,15 @@ public class CodeConverterDriver {
 	
 	public static String CPPcin(String orig, int beginning)
 	{
-		/*if((orig.indexOf("#include <iostream>") >= 0) && beginning == 1)
+		if((orig.indexOf("#include <iostream>") >= 0) && beginning == 1)
 		{
-			orig = orig.replace("#include <iostream>", "import java.util.Scanner;");
+			orig = orig.replace("#include <iostream>", "import java.util.Scanner");
 			if(orig.indexOf("using namespace std") >= 0)
 			{
 				orig = orig.replace("using namespace std", "");
+				orig = orig.trim();
 			}
-		}*/
+		}
 			return orig;
 	}
 	
