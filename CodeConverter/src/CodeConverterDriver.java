@@ -115,35 +115,35 @@ public class CodeConverterDriver {
 		String[] res = orig.split(";");
 		String after;
 		//test for C++ using system input
-		int num = orig.indexOf('>');
-		char ch = 'a';
-		char b = ' ';
+		int addInput;
+		if(orig.indexOf("cin >>") >= 0)
+		{
+			addInput = orig.indexOf("cin >>");
+		}
+		else
+		{
+			addInput = orig.indexOf("cin>>");
+		}
 		String total = "";
-		
 		for(int i = 0; i < res.length; i++) 
 		{
-			if(num >=0)
-			{
-				ch = orig.charAt(num+1);
-				b = orig.charAt(num);
-			}
-			if((num >= 0) && (ch == b) && (i == 0))
-			{
-				after = res[i];
-				res[i] = "import java.util.Scanner;" + CPPJavaLineBreakdown(after) + ";";
-			}
-			else 
-			{
-				after = res[i];
+			after = res[i];
 				if(i < res.length-1)
 				{
-					res[i] = CPPJavaLineBreakdown(after) + ";";
+					res[i] = CPPJavaLineBreakdown(after, addInput, 0) + ";";
+				}
+				else if(res[i].indexOf("using") >= 0)
+				{
+					res[i] = CPPJavaLineBreakdown(after, addInput, 1) + ";";
+				}
+				else if(res[i].indexOf("main") >= 0)
+				{
+					res[i] = CPPJavaLineBreakdown(after, addInput, 2) + ";";
 				}
 				else
 				{
-					res[i] = CPPJavaLineBreakdown(after);
+					res[i] = CPPJavaLineBreakdown(after, addInput, 0);
 				}
-			}
 			total = total.concat(res[i]);
 		}
 		
@@ -151,8 +151,12 @@ public class CodeConverterDriver {
 	}
 	
 	
-	public static String CPPJavaLineBreakdown(String orig) 
+	public static String CPPJavaLineBreakdown(String orig, int addInput, int beginning) 
 	{
+		if((beginning == 1 || beginning == 2) && addInput >= 0)
+		{
+			orig = CPPcin(orig, beginning);
+		}
 		orig = CPPcout(orig);
 		return orig;
 	}
@@ -214,5 +218,41 @@ public class CodeConverterDriver {
 		}
 		
 		return orig;
+	}
+	
+	
+	public static String CPPcin(String orig, int beginning)
+	{
+		if((orig.indexOf("#include <iostream>") >= 0) && beginning == 1)
+		{
+			orig = orig.replace("#include <iostream>", "import java.util.Scanner;");
+			orig = orig.replace("using namespace std", "");
+		}
+		if(beginning == 2)
+		{
+			orig = createScanner(orig);
+			return orig;
+		}
+		else
+		{
+			return orig;
+		}
+	}
+	
+	
+	public static String createScanner(String orig)
+	{
+		int index = orig.indexOf("{", orig.indexOf("main"));
+		String newStr = "";
+		String addScanner = "Scanner in = new Scanner(System.in);";
+		for(int i = 0; i < orig.length(); i++)
+		{
+			newStr += orig.charAt(i);
+			if(i == index)
+			{
+				newStr += addScanner;
+			}
+		}
+		return newStr;
 	}
 }
