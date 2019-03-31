@@ -1,14 +1,15 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 
 public class GUI extends JFrame implements ActionListener
 {
 	public JFrame frame;
-	public JPanel mainPanel, dropDownPanel, leftPanel, rightPanel, combinedPanel;
+	public JPanel mainPanel, convertPanel;
 	public JButton convertBtn;
 	public JComboBox dropDownListLeft, dropDownListRight;
-	public JLabel codeLbl, leftDropDownLbl, rightDropDownLbl;
+	public JLabel inputLbl, outputLbl, leftDropDownLbl, rightDropDownLbl;
 	public JTextArea inputText, outputText;
 	
 	public GUI()
@@ -16,42 +17,55 @@ public class GUI extends JFrame implements ActionListener
 		//Initializations
 		String[] codeList = {"Java", "C++"};
 		
+		//Gridlayout
+		GridLayout convertGL = new GridLayout(2,2);
+		convertGL.setHgap(10);
+		convertGL.setVgap(10);
+		
+		GridLayout mainGL = new GridLayout(2,1);
+		mainGL.setHgap(10);
+		mainGL.setVgap(10);
+		
 		//Panels and Frame
 		frame = new JFrame("Code Converter");
-		mainPanel = new JPanel(new GridLayout(2,1));
-		dropDownPanel = new JPanel();
-		leftPanel = new JPanel(new GridLayout(2,1));
-		rightPanel = new JPanel();
-		combinedPanel = new JPanel();
+		mainPanel = new JPanel(mainGL);
+		convertPanel = new JPanel(convertGL);
 		
 		frame.add(mainPanel);
+		mainPanel.add(convertPanel);
 		
-		leftPanel.add(dropDownPanel);
-		combinedPanel.add(leftPanel);
-		combinedPanel.add(rightPanel);
-		mainPanel.add(combinedPanel);
+		//Padding
+		//convertPanel.setBorder(new EmptyBorder(10,10,10,10));
+		mainPanel.setBorder(new EmptyBorder(25,25,25,25));
 		
 		//ComboBox
 		dropDownListLeft = new JComboBox(codeList);
 		dropDownListRight = new JComboBox(codeList);
-		dropDownPanel.add(dropDownListLeft);
-		dropDownPanel.add(dropDownListRight);
+		convertPanel.add(dropDownListLeft);
+		convertPanel.add(dropDownListRight);
 		
 		//Button
 		convertBtn = new JButton("Convert");
-		convertBtn.setBounds(100, 100, 100, 80);
+		convertBtn.setPreferredSize(new Dimension(50,40));
 		convertBtn.addActionListener(this);
 		mainPanel.add(convertBtn);
 		
 		//TxtAreas
-		inputText = new JTextArea(10,10);
-		outputText = new JTextArea(10,10);
-		leftPanel.add(inputText);
-		rightPanel.add(outputText);
+		inputText = new JTextArea(5,10);
+		outputText = new JTextArea(5,10);
+		convertPanel.add(inputText);
+		convertPanel.add(outputText);
+		
+		//Labels
+		inputLbl = new JLabel("Input Code: ");
+		outputLbl = new JLabel("Output Code: ");
+		leftDropDownLbl = new JLabel("From: ");
+		rightDropDownLbl = new JLabel("To: ");
+		
 		
 		//Frame setup
 		frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		frame.setSize(1000, 1000);
+		frame.setSize(500, 400);
 		frame.setVisible(true);
 	}
 	
