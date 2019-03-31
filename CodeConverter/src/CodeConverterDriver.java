@@ -224,6 +224,47 @@ public class CodeConverterDriver {
 	
 	public static String CPPscannerIn(String orig, String line)
 	{
+		if(line.indexOf("cin >>") >= 0 || line.indexOf("cin>>") >= 0)
+		{
+			line = line.replace("cin >>", "");
+			line = line.replace("cin>>", "");
+		}
+		String modifier = "";
+		int index = orig.indexOf(line) - 10;
+		modifier = orig.substring(index, orig.indexOf(line));
+		if(modifier.indexOf("boolean") >= 0)
+		{
+			line = line.concat(" = in.hasNext()");
+		}
+		else if(modifier.indexOf("int") >= 3)
+		{
+			line = line.concat(" = in.nextInt()");
+		}
+		else if(modifier.indexOf("double") >= 0)
+		{
+			line = line.concat(" = in.nextDouble()");
+		}
+		else if(modifier.indexOf("String") >= 0)
+		{
+			line = line.concat(" = in.nextLine()");
+		}
+		else if(modifier.indexOf("char") >= 0)
+		{
+			line = line.concat(" = in.next().charAt(0)");
+		}
+		else if(modifier.indexOf("float") >= 0)
+		{
+			line = line.concat(" = in.nextFloat()");
+		}
+		else if(modifier.indexOf("long") >= 0)
+		{
+			line = line.concat(" = in.nextLong()");
+		}
+		else if(modifier.indexOf("short") >= 0)
+		{
+			line = line.concat(" = in.nextShort()");
+		}
+		
 		return line;
 	}
 	
