@@ -50,6 +50,7 @@ public class CodeConverterDriver {
 	public static String JavaCPPLineBreakdown(String after,String orig)
 	{
 		after = JavaOut(after);
+		after = JavaIn(after);
 		return after;
 	}
 	
@@ -75,6 +76,26 @@ public class CodeConverterDriver {
 			}			
 			//test for any plus marks inside system.out
 			orig = ComboOut(orig);
+		}
+		return orig;
+	}
+	
+	
+	public static String JavaIn(String orig)
+	{
+		String cin = "cin >> ";
+		orig = orig.replace("Scanner in = new Scanner(System.in)", "");
+		if(orig.indexOf("= in.") >= 0)
+		{
+			orig = orig.replace("= in.hasNext()", "");
+			orig = orig.replace("= in.nextDouble()", "");
+			orig = orig.replace("= in.nextInt()", "");
+			orig = orig.replace("= in.nextFloat()", "");
+			orig = orig.replace("= in.nextShort()", "");
+			orig = orig.replace("= in.nextLong()", "");
+			orig = orig.replace("= in.next().charAt(0)", "");
+			orig = orig.replace("= in.nextLine()", "");
+			orig = cin.concat(orig);
 		}
 		return orig;
 	}
