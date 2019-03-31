@@ -43,6 +43,7 @@ public class CodeConverterDriver {
 			}
 			total = total.concat(res[i]);
 		}
+		total = replaceMain(total);
 		return total;
 	}
 	
@@ -171,7 +172,7 @@ public class CodeConverterDriver {
 					}
 					else
 					{
-						res[i] = CPPJavaLineBreakdown(after, addInput, 2, orig) + ";\n";
+						res[i] = CPPJavaLineBreakdown(after, addInput, 2, orig) + ";";
 					}
 				}
 				else if(i < res.length-1)
@@ -206,6 +207,11 @@ public class CodeConverterDriver {
 		if(orig.indexOf("int main()") >= 0)
 		{
 			orig = orig.replace("int main()","public static void main(String[] args)");
+			return orig;
+		}
+		if(orig.indexOf("int main( ") >=0)
+		{
+			orig = orig.replace("int main( ", "int main()");
 			return orig;
 		}
 		if(orig.indexOf("public static void main(String[] args)") >= 0)
