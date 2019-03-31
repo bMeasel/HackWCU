@@ -36,7 +36,14 @@ public class CodeConverterDriver {
 			{
 				after = replaceMain(after);
 			}
-			res[i] = JavaCPPLineBreakdown(after) + ";";
+			if(i < res.length-1)
+			{
+				res[i] = JavaCPPLineBreakdown(after) + ";\n";
+			}
+			else
+			{
+				res[i] = JavaCPPLineBreakdown(after);
+			}
 			total = total.concat(res[i]);
 		}
 		return total;
@@ -115,12 +122,12 @@ public class CodeConverterDriver {
 		String[] res = orig.split(";");
 		String after;
 		//test for C++ using system input
-		int addInput;
+		int addInput = (-1);
 		if(orig.indexOf("cin >>") >= 0)
 		{
 			addInput = orig.indexOf("cin >>");
 		}
-		else
+		if(orig.indexOf("cin>>") >= 0)
 		{
 			addInput = orig.indexOf("cin>>");
 		}
@@ -128,24 +135,24 @@ public class CodeConverterDriver {
 		for(int i = 0; i < res.length; i++) 
 		{
 			after = res[i];
-				if(i < res.length-1)
+				if(res[i].indexOf("using") >= 0)
 				{
-					res[i] = CPPJavaLineBreakdown(after, addInput, 0, orig) + ";";
-				}
-				else if(res[i].indexOf("using") >= 0)
-				{
-					res[i] = CPPJavaLineBreakdown(after, addInput, 1, orig) + ";";
+					res[i] = CPPJavaLineBreakdown(after, addInput, 1, orig) + ";\n";
 				}
 				else if(res[i].indexOf("main") >= 0)
 				{
 					if(addInput >= 0)
 					{
-						res[i] = CPPJavaLineBreakdown(after, addInput, 2, orig) + ";" + "Scanner in = new Scanner(System.in);";
+						res[i] = CPPJavaLineBreakdown(after, addInput, 2, orig) + ";\n Scanner in = new Scanner(System.in);\n";
 					}
 					else
 					{
-						res[i] = CPPJavaLineBreakdown(after, addInput, 2, orig) + ";";
+						res[i] = CPPJavaLineBreakdown(after, addInput, 2, orig) + ";\n";
 					}
+				}
+				else if(i < res.length-1)
+				{
+					res[i] = CPPJavaLineBreakdown(after, addInput, 0, orig) + ";\n";
 				}
 				else
 				{
