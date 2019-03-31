@@ -138,7 +138,14 @@ public class CodeConverterDriver {
 				}
 				else if(res[i].indexOf("main") >= 0)
 				{
-					res[i] = CPPJavaLineBreakdown(after, addInput, 2, orig) + ";";
+					if(addInput >= 0)
+					{
+						res[i] = CPPJavaLineBreakdown(after, addInput, 2, orig) + ";" + "Scanner in = new Scanner(System.in);";
+					}
+					else
+					{
+						res[i] = CPPJavaLineBreakdown(after, addInput, 2, orig) + ";";
+					}
 				}
 				else
 				{
@@ -228,18 +235,19 @@ public class CodeConverterDriver {
 		{
 			line = line.replace("cin >>", "");
 			line = line.replace("cin>>", "");
+			line = line.trim();
 		}
 		String modifier = "";
 		int index; 
-		if(orig.indexOf(line) >= 10)
+		if(orig.indexOf(line) >= 9)
 		{
-			index = orig.indexOf(line) - 10;
+			index = orig.indexOf(line) - 9;
 		}
 		else
 		{
 			index = 0;
 		}
-		modifier = orig.substring(index, orig.indexOf(line));
+		modifier = orig.substring(index, orig.indexOf(line)+2);
 		if(modifier.indexOf("boolean") >= 0)
 		{
 			line = line.concat(" = in.hasNext()");
@@ -287,31 +295,8 @@ public class CodeConverterDriver {
 				orig = orig.replace("using namespace std", "");
 			}
 		}*/
-		if(beginning == 2)
-		{
-			orig = createScanner(orig);
 			return orig;
-		}
-		else
-		{
-			return orig;
-		}
 	}
 	
 	
-	public static String createScanner(String orig)
-	{
-		int index = orig.indexOf("{", orig.indexOf("main"));
-		String newStr = "";
-		String addScanner = "Scanner in = new Scanner(System.in);";
-		for(int i = 0; i < orig.length(); i++)
-		{
-			newStr += orig.charAt(i);
-			if(i == index)
-			{
-				newStr += addScanner;
-			}
-		}
-		return newStr;
-	}
 }
