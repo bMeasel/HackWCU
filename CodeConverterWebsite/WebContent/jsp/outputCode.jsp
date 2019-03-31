@@ -4,12 +4,10 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Insert title here</title>
+<title>Converted Code</title>
 </head>
 <body>
-	<%= session.getAttribute("leftDropDown") %>
-	<%= session.getAttribute("rightDropDown") %>
+	<h1><u>Converted Code:</u></h1>
 	<%= session.getAttribute("input") %>
-	<%= session.getAttribute("output") %>
 </body>
 </html>

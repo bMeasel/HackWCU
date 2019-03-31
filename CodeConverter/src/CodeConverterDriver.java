@@ -201,7 +201,7 @@ public class CodeConverterDriver {
 		{
 			if((orig.indexOf("cout <<") >= 0))
 			{
-				orig = orig.replace("cout <<", "System.out.print(");	
+				orig = orig.replace("cout <<", "System.out.print(");
 			}
 			else
 			{
