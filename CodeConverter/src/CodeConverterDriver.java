@@ -59,14 +59,51 @@ public class CodeConverterDriver {
 			{
 				orig = orig.replace("System.out.print(", "cout << ");
 				orig = orig.replace(")","");
-				return orig;
 			}
+			//test for print w/ end line
 			else if(orig.indexOf(".println") >= 0)
 			{
 				orig = orig.replace("System.out.println(", "cout << ");
 				orig = orig.replace(")", " << endl");
-				return orig;
 			}
+			//test for any plus marks inside system.out
+			orig = ComboOut(orig);
+		}
+		return orig;
+	}
+	
+	
+	public static String ComboOut(String orig)
+	{
+		String[] res = orig.split("\"");
+		String total = "";
+		for(int i = 0; i < res.length; i++)
+		{
+			if(i % 2 != 1)
+			{
+				res[i] = JavaModOut(res[i]);
+			}
+			
+			if(i < res.length-1)
+			{
+				total = total.concat(res[i]);
+				total = total.concat("\"");
+			}
+			else
+			{
+				total = total.concat(res[i]);
+			}
+		}
+		
+		return total;
+	}
+	
+	
+	public static String JavaModOut(String orig)
+	{
+		for(int i = 0; i < orig.length(); i++)
+		{
+			orig = orig.replace("+", "<<");
 		}
 		return orig;
 	}
