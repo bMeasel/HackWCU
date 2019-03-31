@@ -58,11 +58,14 @@ public class CodeConverterDriver {
 			if(orig.indexOf(".print(") >= 0)
 			{
 				orig = orig.replace("System.out.print(", "cout << ");
+				orig = orig.replace(")","");
+				return orig;
 			}
 			else if(orig.indexOf(".println") >= 0)
 			{
 				orig = orig.replace("System.out.println(", "cout << ");
 				orig = orig.replace(")", " << endl");
+				return orig;
 			}
 		}
 		return orig;
