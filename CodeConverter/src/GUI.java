@@ -52,7 +52,9 @@ public class GUI extends JFrame implements ActionListener
 		
 		//TxtAreas
 		inputText = new JTextArea(5,10);
+		inputText.setLineWrap(true);
 		outputText = new JTextArea(5,10);
+		outputText.setLineWrap(true);
 		convertPanel.add(inputText);
 		convertPanel.add(outputText);
 		
