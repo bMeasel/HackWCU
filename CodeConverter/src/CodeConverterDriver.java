@@ -213,6 +213,11 @@ public class CodeConverterDriver {
 			orig = orig.replace("public static void main(String[] args)", "int main()");
 			return orig;
 		}
+		if(orig.indexOf("public static void main()") >= 0)
+		{
+			orig = orig.replace("public static void main()", "int main()");
+			return orig;
+		}
 		return orig;
 	}
 	
