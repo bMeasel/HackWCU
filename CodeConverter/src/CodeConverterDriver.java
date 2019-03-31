@@ -168,7 +168,7 @@ public class CodeConverterDriver {
 				{
 					if(addInput >= 0)
 					{
-						res[i] = CPPJavaLineBreakdown(after, addInput, 2, orig) + ";\n Scanner in = new Scanner(System.in);";
+						res[i] = CPPJavaLineBreakdown(after, addInput, 2, orig) + ";\nScanner in = new Scanner(System.in);\n";
 					}
 					else
 					{
@@ -328,14 +328,15 @@ public class CodeConverterDriver {
 	
 	public static String CPPcin(String orig, int beginning)
 	{
-		/*if((orig.indexOf("#include <iostream>") >= 0) && beginning == 1)
+		if((orig.indexOf("#include <iostream>") >= 0) && beginning == 1)
 		{
-			orig = orig.replace("#include <iostream>", "import java.util.Scanner;");
+			orig = orig.replace("#include <iostream>", "import java.util.Scanner");
 			if(orig.indexOf("using namespace std") >= 0)
 			{
 				orig = orig.replace("using namespace std", "");
+				orig = orig.trim();
 			}
-		}*/
+		}
 			return orig;
 	}
 	
