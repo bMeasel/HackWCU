@@ -32,6 +32,10 @@ public class CodeConverterDriver {
 		for(int i = 0; i < res.length; i++)
 		{
 			after = res[i];
+			if(after.indexOf("main(") >= 0)
+			{
+				after = replaceMain(after);
+			}
 			res[i] = JavaCPPLineBreakdown(after) + ";";
 			total = total.concat(res[i]);
 		}
@@ -41,8 +45,27 @@ public class CodeConverterDriver {
 	
 	public static String JavaCPPLineBreakdown(String orig)
 	{
-		String[] res = orig.split(" ");
-		
+		orig = JavaOut(orig);
+		return orig;
+	}
+	
+	
+	public static String JavaOut(String orig)
+	{
+		if(orig.indexOf("System.out.print") >= 0)
+		{
+			//test for print w/out end line
+			if(orig.indexOf(".print(") >= 0)
+			{
+				orig = orig.replace("System.out.print(", "cout << ");
+			}
+			else if(orig.indexOf(".println") >= 0)
+			{
+				orig = orig.replace("System.out.println(", "cout << ");
+				orig = orig.replace(")", " << endl");
+			}
+		}
+		return orig;
 	}
 	
 	
