@@ -153,7 +153,7 @@ public class CodeConverterDriver {
 	
 	public static String CPPJavaLineBreakdown(String orig, int addInput, int beginning, String full) 
 	{
-		if((beginning == 1 || beginning == 2) && addInput >= 0)
+		if(beginning == 1 || beginning == 2)
 		{
 			orig = CPPcin(orig, beginning);
 		}
@@ -230,7 +230,15 @@ public class CodeConverterDriver {
 			line = line.replace("cin>>", "");
 		}
 		String modifier = "";
-		int index = orig.indexOf(line) - 10;
+		int index; 
+		if(orig.indexOf(line) >= 10)
+		{
+			index = orig.indexOf(line) - 10;
+		}
+		else
+		{
+			index = 0;
+		}
 		modifier = orig.substring(index, orig.indexOf(line));
 		if(modifier.indexOf("boolean") >= 0)
 		{
@@ -271,11 +279,14 @@ public class CodeConverterDriver {
 	
 	public static String CPPcin(String orig, int beginning)
 	{
-		if((orig.indexOf("#include <iostream>") >= 0) && beginning == 1)
+		/*if((orig.indexOf("#include <iostream>") >= 0) && beginning == 1)
 		{
 			orig = orig.replace("#include <iostream>", "import java.util.Scanner;");
-			orig = orig.replace("using namespace std", "");
-		}
+			if(orig.indexOf("using namespace std") >= 0)
+			{
+				orig = orig.replace("using namespace std", "");
+			}
+		}*/
 		if(beginning == 2)
 		{
 			orig = createScanner(orig);
